@@ -16,6 +16,7 @@
           - build-essential
           - curl
           - mariadb-server
+          - Python3.6
         state: present
 
     - name: Restart Apache2
