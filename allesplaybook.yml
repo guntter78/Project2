@@ -1,5 +1,5 @@
 ---
-- name: Install Munin as master
+- name: The ultimate playbook
   hosts: master
   become: yes
   tasks:
@@ -14,66 +14,11 @@
           - libcgi-fast-perl
           - libapache2-mod-fcgid
           - build-essential
-          - git
           - curl
+          - mariadb-server
         state: present
-
-    - name: Install Munin
-      apt:
-        name: munin
-        state: present
-
-    - name: Remove '#' from munin.conf
-      replace:
-        path: /etc/munin/munin.conf
-        regexp: '^#dbdir  /var/lib/munin'
-        replace: 'dbdir  /var/lib/munin'
-
-    - name: Remove '#' from munin.conf
-      replace:
-        path: /etc/munin/munin.conf
-        regexp: '^#htmldir /var/cache/munin/www'
-        replace: 'htmldir /var/cache/munin/www'
-
-    - name: Remove '#' from munin.conf
-      replace:
-        path: /etc/munin/munin.conf
-        regexp: '^#logdir /var/log/munin'
-        replace: 'logdir /var/log/munin'
-
-    - name: Remove '#' from munin.conf
-      replace:
-        path: /etc/munin/munin.conf
-        regexp: '^#rundir /var/run/munin'
-        replace: 'rundir /var/run/munin'
-
-    - name: Create symlink for apache24.conf
-      file:
-        src: /etc/munin/apache24.conf
-        dest: /etc/apache2/conf-enabled/munin.conf
-        state: link
-
-    - name: Update apache24.conf for outside localhost
-      replace:
-        path: /etc/apache2/conf-enabled/munin.conf
-        regexp: '^\s*Require local'
-        replace: 'Require all granted'
-
-    - name: Update apache24.conf for outside localhost
-      replace:
-        path: /etc/apache2/conf-enabled/munin.conf
-        regexp: '^Options None'
-        replace: 'Options FollowSymLinks SymLinksIfOwnerMatch'
 
     - name: Restart Apache2
       service:
         name: apache2
         state: restarted
-
-    - name: Restart Munin and munin-node
-      service:
-        name: "{{ item }}"
-        state: restarted
-      with_items:
-        - munin
-        - munin-node
